@@ -8,7 +8,6 @@ export const d = createContext();
 
 const App = () => {
   const [data, setData] = useState([])
-  const [loading,setLoading] = useState(false)
   const [page , setPage] = useState(1)
   const [alignment, setAlignment] = useState("month");
 
@@ -24,12 +23,9 @@ const App = () => {
   }
 
 
-  const loadData = async (page,repo) => {  
-    console.log("days is: "+ DAYS_X)
-    axios.get(` https://api.github.com/search/repositories?q=created:>${DAYS_X}&sort=stars&order=desc&page=${page} `).then((resp)=>{
-      console.log(resp.data.items)
-      setData([...resp.data.items])
-      setLoading(false)
+  const loadData = async (page,repo) => {
+    axios.get(` https://api.github.com/search/repositories?q=created:>${DAYS_X}&sort=stars&order=desc&page=${page}`).then((resp)=>{
+      setData([...repo,...resp.data.items])
     })
     // const data = await resp.json();
     // console.log(data.items)
@@ -37,12 +33,13 @@ const App = () => {
   }
   useEffect(() =>{
     setPage(1)
-    loadData(page,data)
+    axios.get(` https://api.github.com/search/repositories?q=created:>${DAYS_X}&sort=stars&order=desc&page=1`).then((resp)=>{
+      setData([...resp.data.items])
+    })
   },[DAYS_X])
 
   const fetchData = () =>{
       setPage(page+1)
-      setLoading(true)
       loadData(page,data)
   }
   console.log("page is :" +page);
